@@ -4,19 +4,19 @@ Aplicación web interactiva orientada al aprendizaje y desarrollo de los método
 
 ## 🚀 Características principales
 
-✅ Ejecución local desde navegador moderno
-✅ 4 Métodos Numéricos implementados para solución de ecuaciones no lineales
-✅ Interfaz intuitiva
-✅ Validación de funciones matemáticas en tiempo real
-✅ Visualización gráfica de funciones
-✅ Tabla de iteraciones para análisis numérico
-✅ Calculadora científica integrada
+- ✅ Ejecución local desde navegador moderno
+- ✅ 4 Métodos Numéricos implementados para solución de ecuaciones no lineales
+- ✅ Interfaz intuitiva
+- ✅ Validación de funciones matemáticas en tiempo real
+- ✅ Visualización gráfica de funciones
+- ✅ Tabla de iteraciones para análisis numérico
+- ✅ Calculadora científica integrada
 
 ## 🧩 Arquitectura del sistema
 
 La aplicación se encuentra organizada en cuatro módulos principales:
 
-🏠 Módulo principal
+## 🏠 Módulo principal
 
 Funciona como la página de inicio e introduce los fundamentos teóricos de los métodos numéricos. Además, presenta un ejemplo aplicativo de ingeniería eléctrica basado en un circuito RLC, adaptdo del libro Métodos Numéricos para Ingenieros de Chapra y Canale.
 
@@ -45,53 +45,36 @@ Complementa el sistema permitiendo realizar operaciones de apoyo durante los cá
 
 El sistema controla el balanceo de paréntesis, errores sintácticos y sincronización entre interfaz y cálculo
 
-🔹 Graficador de funciones
+## 📊 Graficador de funciones
 
-Herramienta visual diseñada para analizar el comportamiento de funciones matemáticas.
+Herramienta visual diseñada para analizar el comportamiento de funciones matemáticas y estimar su raíz gráficamente. Permite:
 
-Permite:
+- Graficar una o múltiples funciones
+- Configurar rango de valores
+- Ajustar la resolución
+Además cuenta con:
+- Plano cartesiano con escalado automático
+- Línea de referencia en y = 0 para identificar raíces
+- Tooltip con coordenadas aproximadas
+- Eliminación individual de funciones
+- Actualización en tiempo real sin recargar la página
 
-Graficar una o múltiples funciones
+El graficador funciona dividiendo el intervalo en puntos equidistantes, evaluand luego cada uno de ellos para generar una curva continua y precisa.
 
-Configurar rango de valores
+## 🛠️ Tecnologías utilizadas
 
-Ajustar la resolución
+- HTML5 -> estructura del sistema
+- CSS3 -> diseño 
+- JavaScript -> lógica de la aplicación
+- Math.js -> cálculos, procesamiento simbólico y numérico
+- Chart.js -> visualización gráfica
+- jQuery -> manejo de eventos
 
-Superponer curvas para comparación
+## 🚀 Instalación y uso
 
-Características adicionales:
-
-Plano cartesiano con escalado automático
-
-Línea de referencia en y = 0 para identificar raíces
-
-Tooltip con coordenadas aproximadas
-
-Eliminación individual de funciones
-
-Actualización en tiempo real sin recargar la página
-
-El graficador divide el intervalo en puntos equidistantes y evalúa cada uno para generar una curva continua y precisa.
-
-🛠️ Tecnologías utilizadas
-
-HTML5 → estructura del sistema
-
-CSS3 → diseño y responsividad
-
-JavaScript → lógica de la aplicación
-
-Math.js → procesamiento simbólico y numérico
-
-Chart.js → visualización gráfica
-
-jQuery → manejo de eventos
-
-💻 Instalación y uso
-
-Clona el repositorio:
-
-git clone https://github.com/tu-usuario/tu-repositorio.git
+### Opción 1: Clonar Repositorio
+1. Clona el repositorio:
+ `code git clone https://github.com/tu-usuario/tu-repositorio.git ` 
 
 
 Accede a la carpeta del proyecto.
