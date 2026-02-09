@@ -74,31 +74,33 @@ El graficador funciona dividiendo el intervalo en puntos equidistantes, evaluand
 
 ### Opción 1: Clonar Repositorio
 1. Clona el repositorio:
- `code git clone https://github.com/tu-usuario/tu-repositorio.git ` 
+ `git clone https://github.com/tu-usuario/tu-repositorio.git ` 
+2. Accede a la carpeta del proyecto.
+3. Ejecuta el archivo:
+ `index.html ` 
 
+### Opción 2: Descargar ZIP
+1. Click en Code --> Download ZIP
+2. Descomprimir el archivo
+3. Abrir `index.html `  en el navegador
 
-Accede a la carpeta del proyecto.
+## 💻 Uso
 
-Ejecuta el archivo:
-
-index.html
-
-
-No se requiere instalación de dependencias ni conexión a internet.
-
-🎯 Objetivo del proyecto
-
-Este proyecto fue desarrollado con fines académicos para:
-
-Fortalecer la comprensión de los métodos numéricos
-
-Integrar teoría y práctica en un entorno interactivo
-
-Facilitar el análisis matemático mediante herramientas visuales
-
-Apoyar el aprendizaje en áreas de ingeniería
-
-📚 Referencia
+1. Abrir la aplicación
+   Abrir `index.html ` en el navegador
+2. Seleccionar método
+   Métodos Numéricos -> Elegir pestaña (Newton, Secante, Bisección, Müller)
+3. Ingresar función
+   Ejemplo: x^2 - 4
+4. Configurar parámetros
+   - Valor(es) inicial(es)
+   - Tolerancia 
+   - Decimales a mostrar
+5. Calcular y visualizar
+   Click en "Calcular"
+   
+## 📚 Referencia
 
 Chapra, Steven C., & Canale, Raymond P. (2011).
 Métodos Numéricos para Ingenieros.
+
