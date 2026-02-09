@@ -1,2 +1,4 @@
-# my-first-project
-This is my first project on GitHub
+# Add two numbers
+## About my first project on GitHub.
+
+Here you can add two numbers
