@@ -19,6 +19,7 @@ La aplicación se encuentra organizada en cuatro módulos principales:
 ## 🏠 Módulo principal
 
 Funciona como la página de inicio e introduce los fundamentos teóricos de los métodos numéricos. Además, presenta un ejemplo aplicativo de ingeniería eléctrica basado en un circuito RLC, adaptdo del libro Métodos Numéricos para Ingenieros de Chapra y Canale.
+![](assets/ind.gif)
 
 ## 🔢 Calculadora de Métodos Numéricos
 
@@ -31,6 +32,7 @@ Es parte principal del sistema, permite a los usuarios trabajar con sus propias 
 
 Posee un selector dinámico de método junto a campos adaptables según el algoritmo seleccionado; así como una tabla detallada de iteraciones y un gráfico automático de la función y la raíz estimada. También permite la configuración de tolerancia, iteraciones y decimales.
 
+![](assets/met.png)
 ## 🧮  Calculadora Científica
 
 Complementa el sistema permitiendo realizar operaciones de apoyo durante los cálculos en el mismo entorno. Incluye:
@@ -45,6 +47,7 @@ Complementa el sistema permitiendo realizar operaciones de apoyo durante los cá
 
 El sistema controla el balanceo de paréntesis, errores sintácticos y sincronización entre interfaz y cálculo
 
+![](assets/cal.png)
 ## 📊 Graficador de funciones
 
 Herramienta visual diseñada para analizar el comportamiento de funciones matemáticas y estimar su raíz gráficamente. Permite:
@@ -61,6 +64,7 @@ Además cuenta con:
 
 El graficador funciona dividiendo el intervalo en puntos equidistantes, evaluand luego cada uno de ellos para generar una curva continua y precisa.
 
+![](assets/gra.png)
 ## 🛠️ Tecnologías utilizadas
 
 - HTML5 -> estructura del sistema
@@ -97,7 +101,7 @@ El graficador funciona dividiendo el intervalo en puntos equidistantes, evaluand
    - Tolerancia 
    - Decimales a mostrar
 5. Calcular y visualizar
-   Click en "Calcular"
+   -- > Click en "Calcular"
    
 ## 📚 Referencia
 
