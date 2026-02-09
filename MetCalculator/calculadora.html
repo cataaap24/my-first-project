@@ -1,0 +1,433 @@
+<style>
+  * {
+    font-family: 'Open Sans', 'Helvetica', 'Arial', sans-serif;
+    box-sizing: border-box;
+  }
+
+  h1, h2, h3, h4 {
+    font-weight: 900;
+  }
+
+  .wrapper {
+    width: 100%;
+    background: radial-gradient(circle, #cf8fab 0%, #f7c6de 50%, #ffe6f0 100%);
+  }
+
+  /* Animación para movimiento de texto */
+  @keyframes movetext1 {
+    0% {
+      top: 100px;
+    }
+    100% {
+      top: 0px;
+    }
+  }
+</style>
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora</title>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans&subset=latin,greek' rel='stylesheet' type='text/css'>
+
+    <!-- LIBRERÍAS EXTERNAS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/2.6.0/math.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="estilo.css"> 
+
+</head>
+<body>
+    <header class="head">
+      <div class="cont1">
+        <div class="cont2">
+            <div class="logo">
+                <h1>Calculadora de Métodos Numéricos</h1> 
+            </div>
+        </div>
+        <div class="head_container">
+          <div class="head_container_content">
+              <a href="index.html" class="header">Página Principal</a>
+              <a href="metodos.html" class="header">Métodos Numéricos</a>
+              <a href="calculadora.html" class="header">Calculadora Básica</a>
+              <a href="graficar.html" class="header">Graficar</a>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+  <div class="wrapper">
+    <div class="calc">
+        <div class="top">
+            <div class='result'></div>
+                <div class='screen'>
+                    <span id="screentext" class="screentext animated"></span>
+                    <span class="hints"></span>
+                </div>
+            </div>
+    <div class="keyboard">
+                <div class="crow">
+                    <div class='cb cbac'>AC</div>
+                    <div class="cb cbpar" key='('>(</div>
+                    <div class="cb cbpar" key=')'>)</div>
+                    <div class='cb cbce'>CE</div>
+                </div>
+
+                <div class="crow">
+                    <div class="cb cbnum" key='pi'>π</div>
+                    <div class="cb cbnum" key='e'>e</div>
+                    <div class="cb cbnum" key='phi'>φ</div>
+                    <div class="cb cbnum" key='tau'>τ</div>
+                </div>
+
+                <div class="crow">
+                    <div class="cb cbinv">Inv</div>
+                    <div class="cb cbfun" key1='sin(' key2="asin(">sin<sup class="inv">-1</sup></div>
+                    <div class="cb cbfun" key1='cos(' key2="acos(">cos<sup class="inv">-1</sup></div>
+                    <div class="cb cbfun" key1='tan(' key2="atan(">tan<sup class="inv">-1</sup></div>
+                </div>
+
+                <div class="crow">
+                    <div class="cb cbfun" key1='log10('>log</div>
+                    <div class="cb cbfun" key1='log('>ln</div>
+                    <div class="cb cbop" key='!' char='!'>!</div>
+                    <div class="cb cbop" key='deg' char='deg'>deg</div>
+                </div>
+
+                <div class="crow">
+                    <div class="cb cbfun" key1='sqrt('>√</div>
+                    <div class="cb cbop" key='^2' char='²'>x²</div>
+                    <div class="cb cbop" key='^3' char='³'>x³</div>
+                    <div class="cb cbop" key='^' char='^'>^</div>
+                </div>
+
+                <div class="crow">
+                    <div class="cb cbnum lighter" key='7'>7</div>
+                    <div class="cb cbnum lighter" key='8'>8</div>
+                    <div class="cb cbnum lighter" key='9'>9</div>
+                    <div class="cb cbop operands" key='/' char='÷'>÷</div>
+                </div>
+
+                <div class="crow">
+                    <div class="cb cbnum lighter" key='4'>4</div>
+                    <div class="cb cbnum lighter" key='5'>5</div>
+                    <div class="cb cbnum lighter" key='6'>6</div>
+                    <div class="cb cbop operands" key='*' char='×'>×</div>
+                </div>
+
+                <div class="crow">
+                    <div class="cb cbnum lighter" key='1'>1</div>
+                    <div class="cb cbnum lighter" key='2'>2</div>
+                    <div class="cb cbnum lighter" key='3'>3</div>
+                    <div class="cb cbop operands" key='-' char='-'>-</div>
+                </div>
+
+                <div class="crow">
+                    <div class="cb cbnum lighter" key='0'>0</div>
+                    <div class="cb cbnum lighter" key='.'>.</div>
+                    <div class="cb cbop lighter" key='E' char='E'>exp</div>
+                    <div class="cb cbop operands" key='+' char='+'>+</div>
+                </div>
+
+                <div class="crow">
+                    <div class="cb cbrnd" style="width:25%">Rnd</div>
+                    <div class="cb cbans" style="width:25%">Ans</div>
+                    <div class="cb enter" style="width:50%">=</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+      <footer>
+        <div class="foot_container">
+          <div id="derechos">
+            <p>@2025 - MetCalculator - Catalina Pineda Posada</p>
+          </div>
+        </div>
+     </footer>
+</body>
+
+</html>
+
+<script>
+  // ==================== LÓGICA DE LA CALCULADORA ====================
+
+$(function() {
+
+  // ==================== VARIABLES GLOBALES ====================
+  var expresion = '';           // Expresión matemática completa
+  var arrayExpresion = [];      // Array con elementos de la expresión
+  var arrayPantalla = [];       // Array con lo que se muestra en pantalla
+  var parentesis = 0;           // Contador de paréntesis abiertos
+  var ansEnPantalla = false;    // Indica si hay un resultado en pantalla
+  var respuesta = null;         // Almacena el último resultado
+  var error = false;            // Indica si hay error de sintaxis
+  var invertido = false;        // Modo invertido para funciones trig
+
+  // ==================== FUNCIONES DE UTILIDAD ====================
+
+  // Restablece todos los valores a su estado inicial
+  function valoresPorDefecto() {
+    expresion = '';
+    arrayExpresion = [];
+    arrayPantalla = [];
+    parentesis = 0;
+    ansEnPantalla = false;
+    respuesta = null;
+    error = false;
+    invertido = false;
+    $('.result').html('');
+    $('.screentext').html('');
+    $('.hints').html('');
+  }
+
+  // Alterna entre modo normal e invertido para funciones trigonométricas
+  function alternarInvertido() {
+    $('.cbfun .inv').toggle();
+    invertido = invertido ? false : true;
+  }
+
+  // Ajusta la visualización de paréntesis pendientes
+  function ajustarParentesis(numero) {
+    $('.hints').html(')'.repeat(numero));
+  }
+
+  // Escribe texto en la pantalla de la calculadora
+  function escribirEnPantalla(modo, texto) {
+    if (modo == 'agregar') {
+      if (error) {
+        arrayPantalla = [];
+      }
+      error = false;
+      arrayPantalla.push(texto);
+    } else if (modo == 'escribir') {
+      arrayPantalla = [texto];
+    } else if (modo == 'eliminar') {
+      var elementoEliminado = arrayPantalla.pop();
+      if (/[(]$/g.test(elementoEliminado)) {
+        parentesis > 0 ? parentesis-- : parentesis = 0;
+        ajustarParentesis(parentesis);
+      }
+    }
+
+    $('.screentext').html(arrayPantalla.join(''));
+
+    if (invertido) {
+      alternarInvertido();
+    }
+  }
+
+  // Agrega texto a la expresión matemática
+  function agregarAExpresion(texto) {
+    arrayExpresion.push(texto);
+    expresion += texto;
+  }
+
+  // Elimina el último elemento de la expresión
+  function eliminarDeExpresion() {
+    var cantidad = arrayExpresion.pop().length;
+    expresion = expresion.slice(0, -cantidad);
+  }
+
+  // ==================== EVENTOS DE BOTONES ====================
+
+  // BOTÓN IGUAL (=): Calcular resultado
+  $('.enter').click(function() {
+    if (ansEnPantalla) {
+      arrayExpresion = [respuesta];
+    }
+
+    agregarAExpresion(')'.repeat(parentesis));
+
+    try {
+      math.eval(arrayExpresion.join('')).toPrecision(8);
+    } catch (e) {
+      error = true;
+    }
+
+    if (error) {
+      valoresPorDefecto();
+      error = true;
+      escribirEnPantalla('escribir', 'Syntax Error');
+    } else {
+      $('.result').html($('.screentext').html().replace(/Ans/, respuesta) + ')'.repeat(parentesis) + ' =');
+      respuesta = math.eval(arrayExpresion.join('')).toPrecision(8);
+      escribirEnPantalla('escribir', respuesta.toString().replace(/(\.0+$)|(0+$)/g, ''));
+      $('.hints').html('');
+
+      var elemento = $('#screentext');
+      var nuevo = elemento.clone(true);
+      elemento.before(nuevo);
+      $(".animated:last").remove();
+
+      ansEnPantalla = true;
+    }
+    parentesis = 0;
+    expresion = '';
+    arrayExpresion = [];
+  });
+
+  // BOTÓN AC (All Clear): Limpiar todo
+  $('.cbac').click(function() {
+    valoresPorDefecto();
+  });
+
+  // BOTONES NUMÉRICOS: Agregar números
+  $('.cbnum').click(function() {
+    var tecla = $(this).attr('key');
+
+    if (invertido) {
+      alternarInvertido();
+    }
+
+    if (ansEnPantalla) {
+      $('.result').html('Ans = ' + $('.screentext').html());
+      escribirEnPantalla('escribir', '');
+      ansEnPantalla = false;
+    }
+
+    agregarAExpresion(tecla);
+    escribirEnPantalla('agregar', $(this).html());
+  });
+
+  // BOTONES DE OPERADORES: +, -, ×, ÷, ^, etc.
+  $('.cbop').click(function() {
+    var tecla = $(this).attr('key');
+    var caracter = $(this).attr('char');
+    
+    if (invertido) {
+      alternarInvertido();
+    }
+
+    if (ansEnPantalla) {
+      $('.result').html('Ans = ' + $('.screentext').html());
+      escribirEnPantalla('escribir', 'Ans');
+      expresion = respuesta;
+      arrayExpresion = [respuesta];
+      parentesis = 0;
+      $('.hints').html('');
+      ansEnPantalla = false;
+    }
+
+    if ((/[/]$|[*]$/g.test(expresion) && (tecla == '/' || tecla == '*'))) {
+      escribirEnPantalla('escribir', $('.screentext').html().replace(/[÷]$|[×]$/g, caracter));
+      eliminarDeExpresion();
+      agregarAExpresion(tecla);
+    } else if (/[+]$|[-]$/g.test(expresion) && (tecla == '+' || tecla == '-')) {
+      escribirEnPantalla('escribir', $('.screentext').html().replace(/[+]$|[-]$/g, caracter));
+      eliminarDeExpresion();
+      agregarAExpresion(tecla);
+    } else {
+      escribirEnPantalla('agregar', caracter);
+      agregarAExpresion(tecla);
+    }
+
+    ansEnPantalla = false;
+  });
+
+  // BOTONES DE PARÉNTESIS: ( y )
+  $('.cbpar').click(function() {
+    var tecla = $(this).attr('key');
+    
+    if (invertido) {
+      alternarInvertido();
+    }
+
+    if (ansEnPantalla) {
+      escribirEnPantalla('escribir', '');
+      ansEnPantalla = false;
+    }
+
+    agregarAExpresion(tecla);
+    escribirEnPantalla('agregar', tecla);
+
+    if (tecla == '(') {
+      parentesis++;
+      ajustarParentesis(parentesis);
+    } else if (tecla == ')') {
+      parentesis > 0 ? parentesis-- : parentesis = 0;
+      ajustarParentesis(parentesis);
+    }
+  });
+
+  // BOTONES DE FUNCIONES: sin, cos, tan, log, ln, sqrt
+  $('.cbfun').click(function() {
+    var tecla1 = $(this).attr('key1');
+    var tecla2 = $(this).attr('key2');
+
+    if (ansEnPantalla) {
+      escribirEnPantalla('escribir', '');
+      ansEnPantalla = false;
+    }
+
+    if (!invertido) {
+      agregarAExpresion(tecla1);
+    } else {
+      agregarAExpresion(tecla2);
+    }
+
+    escribirEnPantalla('agregar', $(this).html() + '(');
+
+    parentesis++;
+    ajustarParentesis(parentesis);
+
+    if (invertido) {
+      alternarInvertido();
+    }
+  });
+
+  // BOTÓN ANS: Usar resultado anterior
+  $('.cbans').click(function() {
+    if (ansEnPantalla) {
+      escribirEnPantalla('escribir', '');
+      ansEnPantalla = false;
+    }
+    
+    if (!/[Ans]$|[0-9]$|[π]$|[e]$/g.test($('.screentext').html())) {
+      agregarAExpresion(respuesta.toString());
+      escribirEnPantalla('agregar', 'Ans');
+    }
+  });
+
+  // BOTÓN INV: Alternar modo invertido para funciones trig
+  $('.cbinv').click(function() {
+    alternarInvertido();
+  });
+
+  // BOTÓN CE (Clear Entry): Borrar último carácter
+  $('.cbce').click(function() {
+    if (invertido) {
+      alternarInvertido();
+    }
+    
+    if (ansEnPantalla) {
+      escribirEnPantalla('escribir', '');
+      ansEnPantalla = false;
+    }
+
+    if (arrayExpresion.length) {
+      eliminarDeExpresion();
+      escribirEnPantalla('eliminar', '');
+    }
+  });
+
+  // BOTÓN RND: Insertar número aleatorio
+  $('.cbrnd').click(function() {
+    var tecla = Math.random().toPrecision(8);
+
+    if (invertido) {
+      alternarInvertido();
+    }
+
+    if (ansEnPantalla) {
+      $('.result').html('Ans = ' + $('.screentext').html());
+      escribirEnPantalla('escribir', '');
+      ansEnPantalla = false;
+    }
+
+    agregarAExpresion(tecla);
+    escribirEnPantalla('agregar', tecla);
+  });
+
+});
+</script>

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- CONFIGURACIÓN BÁSICA DEL DOCUMENTO -->
+    <meta charset="UTF-8">
+    <title>Graficadora</title>
+
+    <!-- LIBRERÍAS EXTERNAS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/2.6.0/math.min.js"></script> <!-- Para cálculos matemáticos -->
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script> <!-- jQuery para manipulación DOM -->
+    
+    <style>
+        /* ESTILOS BÁSICOS Y RESPONSIVOS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box; /* Modelo de caja consistente */
+        }
+        
+        /* MEDIA QUERY PARA DISPOSITIVOS MÓVILES */
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr; /* Una columna en móviles */
+                gap: 1rem;
+                padding: 0 1rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr; /* Formularios en columna */
+            }
+        }
+    </style>
+    
+    <!-- MÁS LIBRERÍAS EXTERNAS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script> <!-- Para gráficos -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script> <!-- Versión más reciente de mathjs -->
+    <script src="utils.js"></script> <!-- Utilidades personalizadas -->
+    <link rel="stylesheet" type="text/css" href="estilo.css"> <!-- Estilos principales -->
+</head>
+
+<body class="pag-calculadora">
+    <!-- ENCABEZADO CON NAVEGACIÓN -->
+    <header class="head">
+      <div class="cont1">
+        <div class="cont2">
+            <div class="logo">
+                <h1>Calculadora de Métodos Numéricos</h1> <!-- Título principal -->
+            </div>
+        </div>
+        <div class="head_container">
+            <div class="head_container_content">
+                <!-- MENÚ DE NAVEGACIÓN -->
+                <a href="index.html" class="header">Página Principal</a>
+                <a href="metodos.html" class="header">Métodos Numéricos</a>
+                <a href="calculadora.html" class="header">Calculadora Básica</a>
+                <a href="graficar.html" class="header">Graficar</a> <!-- Página actual -->
+            </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL CON DOS PANELES -->
+    <div class="main-container">
+        <!-- PANEL IZQUIERDO: CONTROLES -->
+        <div class="control-panel">
+            <h2>Graficador de Funciones</h2> <!-- Título del graficador -->
+            
+            <!-- ENTRADA DE FUNCIÓN -->
+            <div class="form-group">
+                <label for="function-input">Función f(x):</label>
+                <input type="text" id="function-input" 
+                       placeholder="Ejemplo: x^2 + 2*x - 1"
+                       style="font-family: 'Courier New', monospace;"> <!-- Fuente monoespaciada para fórmulas -->
+                <small style="color: #718096; margin-top: 0.5rem; display: block;">
+                    Usa: x, +, -, *, /, ^, sin(), cos(), tan(), exp(), log(), sqrt(), pi, e
+                </small> <!-- Instrucciones de sintaxis -->
+            </div>
+
+            <!-- BOTONES DE FUNCIONES DE EJEMPLO -->
+            <div class="example-functions">
+                <div class="example-btn" onclick="setFunction('x^2')">x²</div> <!-- Función cuadrática -->
+                <div class="example-btn" onclick="setFunction('sin(x)')">sin(x)</div> <!-- Seno -->
+                <div class="example-btn" onclick="setFunction('cos(x)')">cos(x)</div> <!-- Coseno -->
+                <div class="example-btn" onclick="setFunction('exp(x)')">e^x</div> <!-- Exponencial -->
+                <div class="example-btn" onclick="setFunction('log(x)')">ln(x)</div> <!-- Logaritmo natural -->
+                <div class="example-btn" onclick="setFunction('sqrt(x)')">√x</div> <!-- Raíz cuadrada -->
+                <div class="example-btn" onclick="setFunction('1/x')">1/x</div> <!-- Función racional -->
+                <div class="example-btn" onclick="setFunction('abs(x)')">|x|</div> <!-- Valor absoluto -->
+            </div>
+
+            <!-- PREVISUALIZACIÓN DE LA FUNCIÓN -->
+            <div id="function-preview" class="function-preview" style="display: none;"></div>
+
+            <!-- RANGOS DEL EJE X -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="x-min">X mínimo:</label>
+                    <input type="number" id="x-min" value="-10" step="0.1"> <!-- Valor por defecto -10 -->
+                </div>
+                <div class="form-group">
+                    <label for="x-max">X máximo:</label>
+                    <input type="number" id="x-max" value="10" step="0.1"> <!-- Valor por defecto 10 -->
+                </div>
+            </div>
+
+            <!-- RANGOS DEL EJE Y -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="y-min">Y mínimo:</label>
+                    <input type="number" id="y-min" value="-10" step="0.1"> <!-- Valor por defecto -10 -->
+                </div>
+                <div class="form-group">
+                    <label for="y-max">Y máximo:</label>
+                    <input type="number" id="y-max" value="10" step="0.1"> <!-- Valor por defecto 10 -->
+                </div>
+            </div>
+
+            <!-- CONTROL DE RESOLUCIÓN -->
+            <div class="form-group">
+                <label for="points">Resolución (puntos):</label>
+                <input type="number" id="points" value="500" min="100" max="2000" step="100"> <!-- 500 puntos por defecto -->
+            </div>
+
+            <!-- BOTONES DE ACCIÓN -->
+            <button class="btn btn-primary" onclick="addFunction()">Agregar Función</button> <!-- Botón principal -->
+            <button class="btn btn-secondary" onclick="clearGraph()">Limpiar Todo</button> <!-- Limpiar gráfica -->
+            <button class="btn btn-secondary" onclick="autoScale()">Auto Escalar</button> <!-- Ajuste automático de escala -->
+
+            <!-- LISTA DE FUNCIONES GRAFICADAS -->
+            <div class="form-group">
+                <label>Funciones graficadas:</label>
+                <div class="function-list" id="function-list">
+                    <p style="color: #718096; text-align: center;">No hay funciones graficadas</p> <!-- Mensaje inicial -->
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL DERECHO: GRÁFICA -->
+        <div class="graph-panel">
+            <h2>Gráfica Interactiva</h2> <!-- Título del gráfico -->
+            <div class="chart-container">
+                <canvas id="functionChart"></canvas> <!-- Lienzo para Chart.js -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== VARIABLES GLOBALES ====================
+        
+        let chart = null; // Instancia del gráfico de Chart.js
+        let functions = []; // Array para almacenar las funciones graficadas
+        let colorIndex = 0; // Índice para rotar colores
+        
+        // PALETA DE COLORES PARA LAS FUNCIONES
+        const colors = [
+            '#667eea', '#f56565', '#48bb78', '#ed8936', 
+            '#9f7aea', '#38b2ac', '#f687b3', '#4fd1c7',
+            '#fbb6ce', '#c6f6d5', '#bee3f8', '#faf089'
+        ];
+
+        // ==================== FUNCIONES DE UTILIDAD ====================
+
+        // EVALUAR UNA EXPRESIÓN MATEMÁTICA EN UN PUNTO X
+        function evaluateFunction(expression, x) {
+            try {
+                // Usar mathjs para evaluar la expresión matemática
+                const result = math.evaluate(expression, {x: x});
+                return isFinite(result) ? result : null; // Devolver null si no es finito
+            } catch (error) {
+                return null; // Devolver null en caso de error
+            }
+        }
+
+        // VALIDAR SI UNA EXPRESIÓN ES UNA FUNCIÓN VÁLIDA
+        function validateFunction(expression) {
+            try {
+                // Probar la función con algunos valores de prueba
+                const testValues = [-2, -1, 0, 1, 2];
+                let validCount = 0; // Contador de evaluaciones exitosas
+                
+                for (let testX of testValues) {
+                    const result = evaluateFunction(expression, testX);
+                    if (result !== null) {
+                        validCount++;
+                    }
+                }
+                
+                // Si al menos una evaluación fue exitosa, la función es válida
+                if (validCount > 0) {
+                    return { valid: true, message: "Función válida ✓" };
+                } else {
+                    return { valid: false, message: "No se pudo evaluar la función" };
+                }
+            } catch (error) {
+                return { valid: false, message: error.message };
+            }
+        }
+
+        // ESTABLECER UNA FUNCIÓN EN EL CAMPO DE ENTRADA
+        function setFunction(func) {
+            document.getElementById('function-input').value = func;
+            updatePreview(); // Actualizar la previsualización
+        }
+
+        // ACTUALIZAR LA PREVISUALIZACIÓN DE LA FUNCIÓN
+        function updatePreview() {
+            const expression = document.getElementById('function-input').value;
+            const preview = document.getElementById('function-preview');
+            
+            if (!expression) {
+                preview.style.display = 'none'; // Ocultar si no hay expresión
+                return;
+            }
+            
+            const validation = validateFunction(expression);
+            preview.style.display = 'block'; // Mostrar el panel de previsualización
+            
+            if (validation.valid) {
+                // Mostrar mensaje de éxito en verde
+                preview.innerHTML = `<span class="success">${validation.message}</span><br>Función: ${expression}`;
+                preview.style.borderColor = '#68d391';
+                preview.style.backgroundColor = '#f0fff4';
+            } else {
+                // Mostrar mensaje de error en rojo
+                preview.innerHTML = `<span class="error">✗ ${validation.message}</span>`;
+                preview.style.borderColor = '#fc8181';
+                preview.style.backgroundColor = '#fed7d7';
+            }
+        }
+
+        // GENERAR PUNTOS PARA UNA FUNCIÓN EN UN RANGO DADO
+        function generatePoints(expression, xMin, xMax, numPoints) {
+            const points = []; // Array para almacenar los puntos
+            const step = (xMax - xMin) / (numPoints - 1); // Calcular incremento entre puntos
+            
+            for (let i = 0; i < numPoints; i++) {
+                const x = xMin + i * step; // Calcular coordenada x
+                const y = evaluateFunction(expression, x); // Calcular coordenada y
+                
+                // Solo agregar puntos válidos y evitar valores extremos
+                if (y !== null && Math.abs(y) < 1e10) {
+                    points.push({ x: x, y: y });
+                }
+            }
+            
+            return points;
+        }
+
+        // AGREGAR UNA NUEVA FUNCIÓN A LA GRÁFICA
+        function addFunction() {
+            const expression = document.getElementById('function-input').value.trim();
+            
+            if (!expression) {
+                alert('Por favor ingresa una función');
+                return;
+            }
+            
+            const validation = validateFunction(expression);
+            if (!validation.valid) {
+                alert('Función inválida: ' + validation.message);
+                return;
+            }
+            
+            // VERIFICAR SI LA FUNCIÓN YA EXISTE
+            if (functions.some(f => f.expression === expression)) {
+                alert('Esta función ya está graficada');
+                return;
+            }
+            
+            // OBTENER PARÁMETROS DE CONFIGURACIÓN
+            const xMin = parseFloat(document.getElementById('x-min').value);
+            const xMax = parseFloat(document.getElementById('x-max').value);
+            const numPoints = parseInt(document.getElementById('points').value);
+            
+            // GENERAR PUNTOS PARA LA FUNCIÓN
+            const points = generatePoints(expression, xMin, xMax, numPoints);
+            
+            if (points.length === 0) {
+                alert('No se pudieron generar puntos válidos para esta función en el rango especificado');
+                return;
+            }
+            
+            // ASIGNAR COLOR Y ACTUALIZAR ÍNDICE
+            const color = colors[colorIndex % colors.length];
+            colorIndex++;
+            
+            // CREAR OBJETO DE DATOS DE LA FUNCIÓN
+            const functionData = {
+                id: Date.now(), // ID único basado en timestamp
+                expression: expression,
+                color: color,
+                points: points
+            };
+            
+            functions.push(functionData); // Agregar a la lista
+            updateFunctionList(); // Actualizar lista visual
+            updateChart(); // Actualizar gráfica
+            
+            // LIMPIAR INPUT Y PREVISUALIZACIÓN
+            document.getElementById('function-input').value = '';
+            updatePreview();
+        }
+
+        // ACTUALIZAR LA LISTA VISUAL DE FUNCIONES
+        function updateFunctionList() {
+            const listContainer = document.getElementById('function-list');
+            
+            if (functions.length === 0) {
+                listContainer.innerHTML = '<p style="color: #718096; text-align: center;">No hay funciones graficadas</p>';
+                return;
+            }
+            
+            listContainer.innerHTML = ''; // Limpiar lista
+            functions.forEach(func => {
+                const item = document.createElement('div');
+                item.className = 'function-item';
+                item.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <div class="function-color" style="background-color: ${func.color};"></div>
+                        <span style="font-family: 'Courier New', monospace;">${func.expression}</span>
+                    </div>
+                    <button class="remove-btn" onclick="removeFunction(${func.id})">✕</button>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        // ELIMINAR UNA FUNCIÓN DE LA GRÁFICA
+        function removeFunction(id) {
+            functions = functions.filter(f => f.id !== id); // Filtrar por ID
+            updateFunctionList(); // Actualizar lista
+            updateChart(); // Actualizar gráfica
+        }
+
+        // LIMPIAR TODAS LAS FUNCIONES DE LA GRÁFICA
+        function clearGraph() {
+            functions = []; // Vaciar array
+            colorIndex = 0; // Reiniciar índice de colores
+            updateFunctionList(); // Actualizar lista
+            updateChart(); // Actualizar gráfica
+        }
+
+        // AJUSTAR AUTOMÁTICAMENTE LA ESCALA DE LOS EJES
+        function autoScale() {
+            if (functions.length === 0) return; // No hacer nada si no hay funciones
+            
+            let minX = Infinity, maxX = -Infinity;
+            let minY = Infinity, maxY = -Infinity;
+            
+            // ENCONTRAR LOS VALORES MÍNIMOS Y MÁXIMOS EN AMBOS EJES
+            functions.forEach(func => {
+                func.points.forEach(point => {
+                    minX = Math.min(minX, point.x);
+                    maxX = Math.max(maxX, point.x);
+                    minY = Math.min(minY, point.y);
+                    maxY = Math.max(maxY, point.y);
+                });
+            });
+            
+            // AGREGAR MARGEN A LOS EXTREMOS
+            const marginX = Math.max((maxX - minX) * 0.1, 0.5);
+            const marginY = Math.max((maxY - minY) * 0.1, 0.5);
+            
+            // ACTUALIZAR LOS CAMPOS DE ENTRADA CON LOS NUEVOS RANGOS
+            document.getElementById('x-min').value = (minX - marginX).toFixed(2);
+            document.getElementById('x-max').value = (maxX + marginX).toFixed(2);
+            document.getElementById('y-min').value = (minY - marginY).toFixed(2);
+            document.getElementById('y-max').value = (maxY + marginY).toFixed(2);
+            
+            // REGENERAR PUNTOS CON LA NUEVA ESCALA
+            const numPoints = parseInt(document.getElementById('points').value);
+            functions.forEach(func => {
+                func.points = generatePoints(func.expression, minX - marginX, maxX + marginX, numPoints);
+            });
+            
+            updateChart(); // Actualizar gráfica con nueva escala
+        }
+
+        // ACTUALIZAR LA GRÁFICA CON TODAS LAS FUNCIONES
+        function updateChart() {
+            const ctx = document.getElementById('functionChart').getContext('2d');
+            
+            // DESTRUIR GRÁFICA EXISTENTE SI HAY UNA
+            if (chart) {
+                chart.destroy();
+            }
+            
+            // OBTENER RANGOS ACTUALES
+            const xMin = parseFloat(document.getElementById('x-min').value);
+            const xMax = parseFloat(document.getElementById('x-max').value);
+            const yMin = parseFloat(document.getElementById('y-min').value);
+            const yMax = parseFloat(document.getElementById('y-max').value);
+            
+            const datasets = []; // Array para datasets de Chart.js
+            
+            // AGREGAR LÍNEAS DE REFERENCIA (EJES X E Y)
+            datasets.push({
+                label: 'Eje X',
+                data: [{ x: xMin, y: 0 }, { x: xMax, y: 0 }],
+                borderColor: '#cbd5e0', // Color gris claro
+                borderWidth: 1,
+                borderDash: [2, 2], // Línea punteada
+                fill: false,
+                pointRadius: 0, // Sin puntos
+                pointHoverRadius: 0
+            });
+            
+            datasets.push({
+                label: 'Eje Y',
+                data: [{ x: 0, y: yMin }, { x: 0, y: yMax }],
+                borderColor: '#cbd5e0',
+                borderWidth: 1,
+                borderDash: [2, 2],
+                fill: false,
+                pointRadius: 0,
+                pointHoverRadius: 0
+            });
+            
+            // AGREGAR CADA FUNCIÓN COMO UN DATASET SEPARADO
+            functions.forEach(func => {
+                datasets.push({
+                    label: `f(x) = ${func.expression}`, // Leyenda
+                    data: func.points, // Puntos de la función
+                    borderColor: func.color, // Color único
+                    backgroundColor: func.color + '20', // Color con transparencia
+                    borderWidth: 3, // Línea gruesa
+                    fill: false, // Sin relleno
+                    pointRadius: 0, // Sin puntos en la línea
+                    pointHoverRadius: 5, // Puntos al hacer hover
+                    tension: 0.1 // Suavizado de curvas
+                });
+            });
+            
+            // CREAR NUEVA INSTANCIA DEL GRÁFICO
+            chart = new Chart(ctx, {
+                type: 'line', // Gráfico de líneas
+                data: { datasets: datasets },
+                options: {
+                    responsive: true, // Responsivo
+                    maintainAspectRatio: false, // No mantener relación de aspecto
+                    interaction: {
+                        intersect: false,
+                        mode: 'nearest'
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear', // Eje lineal
+                            min: xMin, // Mínimo del eje X
+                            max: xMax, // Máximo del eje X
+                            title: {
+                                display: true,
+                                text: 'x', // Etiqueta del eje X
+                                font: { size: 14, weight: 'bold' }
+                            },
+                            grid: {
+                                color: '#e2e8f0', // Color de la grilla
+                                lineWidth: 1
+                            }
+                        },
+                        y: {
+                            min: yMin, // Mínimo del eje Y
+                            max: yMax, // Máximo del eje Y
+                            title: {
+                                display: true,
+                                text: 'f(x)', // Etiqueta del eje Y
+                                font: { size: 14, weight: 'bold' }
+                            },
+                            grid: {
+                                color: '#e2e8f0',
+                                lineWidth: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Graficador de Funciones Matemáticas', // Título del gráfico
+                            font: { size: 16, weight: 'bold' }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top', // Leyenda en la parte superior
+                            labels: {
+                                filter: function(legendItem) {
+                                    return !legendItem.text.startsWith('Eje'); // Ocultar ejes en leyenda
+                                }
+                            }
+                        }
+                    },
+                    elements: {
+                        point: {
+                            hoverRadius: 8 // Tamaño de puntos al hacer hover
+                        }
+                    }
+                }
+            });
+        }
+
+        // ==================== CONFIGURACIÓN DE EVENT LISTENERS ====================
+
+        // ACTUALIZAR PREVISUALIZACIÓN AL ESCRIBIR
+        document.getElementById('function-input').addEventListener('input', updatePreview);
+        
+        // AGREGAR FUNCIÓN CON LA TECLA ENTER
+        document.getElementById('function-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addFunction();
+            }
+        });
+
+        // ACTUALIZAR GRÁFICA CUANDO CAMBIAN LOS RANGOS O RESOLUCIÓN
+        ['x-min', 'x-max', 'y-min', 'y-max', 'points'].forEach(id => {
+            document.getElementById(id).addEventListener('change', function() {
+                // REGENERAR PUNTOS CON NUEVA CONFIGURACIÓN
+                const xMin = parseFloat(document.getElementById('x-min').value);
+                const xMax = parseFloat(document.getElementById('x-max').value);
+                const numPoints = parseInt(document.getElementById('points').value);
+                
+                functions.forEach(func => {
+                    func.points = generatePoints(func.expression, xMin, xMax, numPoints);
+                });
+                
+                updateChart(); // Actualizar gráfica
+            });
+        });
+
+        // ==================== INICIALIZACIÓN ====================
+
+        // INICIALIZAR AL CARGAR LA PÁGINA
+        window.addEventListener('load', function() {
+            updateChart(); // Crear gráfica inicial
+            
+            // AGREGAR FUNCIONES DE EJEMPLO DESPUÉS DE UNA PAUSA
+            setTimeout(() => {
+                document.getElementById('function-input').value = 'x^2';
+                addFunction(); // Agregar parábola
+                document.getElementById('function-input').value = 'sin(x)';
+                addFunction(); // Agregar seno
+            }, 500);
+        });
+    </script>
+</body>
+</html>

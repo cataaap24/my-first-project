@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Métodos Numéricos</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Courgette&family=Satisfy&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            text-decoration: none;
+            font-family: 'Josefin Sans';
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                padding: 0 1rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+            /* FORZAR LAYOUT DE 2 COLUMNAS */
+    .pag-calculadora .main-container {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 2rem !important;
+        width: 100% !important;
+        max-width: 1400px !important;
+        margin: 2rem auto !important;
+        padding: 0 2rem !important;
+        align-items: start !important;
+    }
+
+    .pag-calculadora .calculator-panel,
+    .pag-calculadora .results-panel {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <script src="utils.js"></script>
+    <link rel="stylesheet" type="text/css" href="estilo.css"> 
+</head>
+<body class="pag-calculadora">
+    <header class="head">
+        <div class="cont1">
+            <div class="logo">
+                <h1>Calculadora de Métodos Numéricos</h1>
+            </div>
+            <div class="head_container_content">
+                <a href="index.html" class="header">Página Principal</a>
+                <a href="metodos.html" class="header">Métodos Numéricos</a>
+                <a href="calculadora.html" class="header">Calculadora Básica</a>
+                <a href="graficar.html" class="header">Graficar</a>
+            </div>
+        </div>
+    </header>
+<!-- Contenedor principal con dos paneles -->
+    <div class="main-container">
+        <!-- Panel izquierdo: Calculadora -->
+        <div class="calculator-panel">
+            <h2>Selecciona un Método</h2>
+            
+            <!-- Selector de método numérico -->
+            <div class="form-group">
+                <select id="methodSelect">
+                    <option value="muller">Método de Müller</option>
+                    <option value="secant">Método de la Secante</option>
+                    <option value="bisection">Método de Bisección</option>
+                    <option value="newton">Método de Newton-Raphson</option>
+                </select>
+            </div>
+
+            <!-- FORMULARIO DINÁMICO ÚNICO -->
+            <form id="dynamic-form" class="method-form active">
+                <!-- Sección de función -->
+                <div class="form-group">
+                    <label for="functionInput">Función f(x):</label>
+                    <input type="text" id="functionInput" name="function" 
+                           value="sin(x) - x/2" 
+                           placeholder="Ejemplo: x^3 - 2*x - 5, cos(x) - x, etc."
+                           style="font-family: 'Courier New', monospace;">
+                    <small style="color: #718096; margin-top: 0.5rem; display: block;">
+                        Usa: x (variable), +, -, *, /, ^, exp(), sin(), cos(), tan(), log(), sqrt(), abs(), pi, e
+                    </small>
+                    
+                    <!-- Sección de carga de imagen -->
+                    <div class="image-upload-container">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">
+                            📷 O sube una imagen de la función:
+                        </label>
+                        <!-- Input oculto para archivos -->
+                        <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                        <!-- Botón que activa el input file -->
+                        <button type="button" class="image-upload-btn" onclick="document.getElementById('imageUpload').click()">
+                            Seleccionar imagen
+                        </button>
+                        <small style="color: #718096; display: block; margin-top: 0.5rem;">
+                            Sube una imagen clara de la función escrita.
+                        </small>
+
+                        <!-- Contenedor para vista previa de imagen -->
+                        <div id="imagePreview" class="image-preview">
+                            <img id="previewImg" src="#" alt="Vista previa">
+                        </div>
+
+                        <!-- Indicador de procesamiento OCR -->
+                        <div id="ocrProcessing" class="ocr-processing">
+                            Procesando imagen...
+                        </div>
+                        <!-- Resultados del reconocimiento OCR -->
+                        <div id="ocrResult" class="ocr-result" style="display: none;">
+                            <strong>Texto reconocido:</strong>
+                            <div id="recognizedText" style="font-family: 'Courier New', monospace; background: #f8f9fa; padding: 5px; border-radius: 3px; margin: 5px 0;"></div>
+                            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                                <button type="button" id="useText" class="image-upload-btn">Usar este texto</button>
+                                <button type="button" id="correctText" class="image-upload-btn" style="background: #c158a6;">Editar texto</button>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+                
+                <!-- Funciones de ejemplo -->
+                <div class="form-group">
+                    <label>Funciones de Ejemplo:</label>
+                    <div id="exampleButtons" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Campos específicos del método (se llenarán dinámicamente) -->
+                <div id="method-specific-fields">
+                </div>
+
+                <!-- Parámetros comunes -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tolerance">Tolerancia (%):</label>
+                        <input type="number" id="tolerance" name="tolerance" value="0.0001" step="0.000001" min="0.000001" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="maxIterations">Máx. iteraciones:</label>
+                        <input type="number" id="maxIterations" name="maxIterations" value="100" min="1" max="1000" step="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="decimals">Decimales:</label>
+                        <input type="number" id="decimals" name="decimals" value="6" min="2" max="15" step="1" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="calculate-btn">Calcular Raíz</button>
+            </form>
+        </div>
+
+        <div class="results-panel">
+            <h2>Resultados</h2>
+            <div id="results">
+                Ingresa los parámetros y haz clic en "Calcular Raíz" para ver los resultados.
+            </div>
+            <div id="chart-container">
+                <canvas id="functionChart"></canvas> <!-- Lienzo para gráficos de Chart.js -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIGURACIÓN DE MÉTODOS ====================
+        // Objeto que contiene la configuración para cada método numérico
+        const methodConfig = {
+            muller: {
+                name: "Método de Müller",
+                functionValue: "sin(x) - x/2",
+                examples: [
+                    { text: "sin(x) - x/2", value: "sin(x) - x/2" },
+                    { text: "exp(x) - 3x²", value: "exp(x) - 3*x^2" },
+                    { text: "x³ - 2x - 5", value: "x^3 - 2*x - 5" }
+                ],
+                fields: [
+                    { id: "x0", label: "Punto inicial x₀:", value: "1", required: true },
+                    { id: "x1", label: "Punto inicial x₁:", value: "1.5", required: true },
+                    { id: "x2", label: "Punto inicial x₂:", value: "2", required: true }
+                ],
+                handler: handleMullerSubmit // Función que maneja el envío del formulario
+            },
+            secant: {
+                name: "Método de la Secante",
+                functionValue: "x^3 - 2*x - 5",
+                examples: [
+                    { text: "x³ - 2x - 5", value: "x^3 - 2*x - 5" },
+                    { text: "cos(x) - x", value: "cos(x) - x" },
+                    { text: "exp(x) - 3x²", value: "exp(x) - 3*x^2" },
+                    { text: "x² - 4", value: "x^2 - 4" }
+                ],
+                fields: [
+                    { id: "x0", label: "Aproximación anterior x₀:", value: "2", required: true },
+                    { id: "x1", label: "Aproximación actual x₁:", value: "3", required: true }
+                ],
+                handler: handleSecantSubmit
+            },
+            bisection: {
+                name: "Método de Bisección",
+                functionValue: "x^3 - 2*x - 5",
+                examples: [
+                    { text: "5x³ - 5x² + 6x - 2", value: "5*x^3 - 5*x^2 + 6*x - 2" },
+                    { text: "cos(x) - x", value: "cos(x) - x" },
+                    { text: "exp(x) - 3x²", value: "exp(x) - 3*x^2" },
+                    { text: "x² - 4", value: "x^2 - 4" }
+                ],
+                fields: [
+                    { id: "a", label: "a (límite inferior):", value: "0", required: true },
+                    { id: "b", label: "b (límite superior):", value: "1", required: true }
+                ],
+                handler: handleBisectionSubmit
+            },
+            newton: {
+                name: "Método de Newton-Raphson",
+                functionValue: "x^3 - 2*x - 5",
+                examples: [
+                    { text: "x³ - 2x - 5", value: "x^3 - 2*x - 5" },
+                    { text: "cos(x) - x", value: "cos(x) - x" },
+                    { text: "exp(x) - 3x²", value: "exp(x) - 3*x^2" }
+                ],
+                fields: [
+                    { id: "x0", label: "Punto inicial x₀:", value: "2", required: true }
+                ],
+                handler: handleNewtonSubmit
+            }
+        };
+
+
+
+
+
+
+        // ==================== FUNCIONALIDAD DE OCR ====================
+         // Configura el sistema de reconocimiento óptico de caracteres
+        function setupOCR() {
+            // Verificar que los elementos existen
+            const imageUpload = document.getElementById('imageUpload');
+            const useTextBtn = document.getElementById('useText');
+            const correctTextBtn = document.getElementById('correctText');
+           
+            // Si los elementos no están cargados, reintentar después de 100ms
+            if (!imageUpload || !useTextBtn || !correctTextBtn) {
+                console.log('Elementos OCR no cargados aún, reintentando...');
+                setTimeout(setupOCR, 100); // Reintentar después de 100ms
+                return;
+            }
+            const previewImg = document.getElementById('previewImg');
+            const imagePreview = document.getElementById('imagePreview');
+            const ocrProcessing = document.getElementById('ocrProcessing');
+            const ocrResult = document.getElementById('ocrResult');
+            const recognizedText = document.getElementById('recognizedText');
+
+            // Event listener para cambio de archivo de imagen
+            imageUpload.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                // Mostrar vista previa
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    
+                    // Procesar OCR
+                    processOCR(file);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Procesa la imagen con Tesseract OCR
+            async function processOCR(file) {
+                ocrProcessing.style.display = 'block';
+                ocrResult.style.display = 'none';
+
+                try {
+                    // Usar Tesseract para reconocer texto
+                    const { data: { text } } = await Tesseract.recognize(
+                        file,
+                        'eng+spa',
+                        { logger: m => console.log(m) } // Logger para depuración
+                    );
+                    
+                    // Limpiar y normalizar el texto reconocido
+                    const correctedText = cleanOCRText(text);
+                    recognizedText.textContent = correctedText;
+                    ocrProcessing.style.display = 'none';
+                    ocrResult.style.display = 'block';
+                } catch (error) {
+                    console.error('Error en OCR:', error);
+                    ocrProcessing.style.display = 'none';
+                    alert('Error al procesar la imagen. Intenta con una imagen más clara.');
+                }
+            }
+
+            // Botón para usar el texto reconocido
+            useTextBtn.addEventListener('click', function() {
+                document.getElementById('functionInput').value = recognizedText.textContent;
+                ocrResult.style.display = 'none';
+                imagePreview.style.display = 'none';
+                imageUpload.value = '';
+            });
+
+            // Función para habilitar edición del texto reconocido
+            function handleEdit() {
+                const currentText = recognizedText.textContent;
+                // Reemplazar texto con campo de edición
+                recognizedText.innerHTML = `<input type="text" id="editableText" value="${currentText}" style="width: 100%; padding: 5px; font-family: 'Courier New', monospace; border: 1px solid #cbd5e0; border-radius: 3px;">`;
+                
+                const editableInput = document.getElementById('editableText');
+                editableInput.focus();
+                editableInput.select();
+
+                // Cambiar botón a "Guardar"
+                correctTextBtn.textContent = 'Guardar';
+                correctTextBtn.style.background = '#48bb78';
+                
+                // Cambiar event listener
+                correctTextBtn.removeEventListener('click', handleEdit);
+                correctTextBtn.addEventListener('click', handleSave);
+            }
+
+            // Función para guardar el texto editado
+            function handleSave() {
+                const editableInput = document.getElementById('editableText');
+                const editedText = editableInput.value;
+                recognizedText.textContent = editedText;
+                
+                // Restaurar botón a "Editar texto"
+                correctTextBtn.textContent = 'Editar texto';
+                correctTextBtn.style.background = '#c158a6;';
+                
+                // Restaurar event listener
+                correctTextBtn.removeEventListener('click', handleSave);
+                correctTextBtn.addEventListener('click', handleEdit);
+            }
+            correctTextBtn.addEventListener('click', handleEdit);
+        }
+
+        // Limpia y normaliza el texto reconocido por OCR
+        function cleanOCRText(text) {
+            console.log("Texto original del OCR:", text);
+             // Limpieza básica: eliminar saltos de línea y espacios múltiples
+            let cleaned = text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+            
+            // Reemplazar caracteres problemáticos
+            cleaned = cleaned
+                .replace(/[`´'""ˊˋ]/g, '')
+                .replace(/[﹡∗·]/g, '*')
+                .replace(/[﹢＋]/g, '+')
+                .replace(/[﹣－–—]/g, '-')
+                .replace(/[∕／]/g, '/')
+                .replace(/[＝]/g, '=')
+                .replace(/[（]/g, '(')
+                .replace(/[）]/g, ')')
+                .replace(/[Il1|]/g, '1')
+                .replace(/[O0]/g, '0')
+                .replace(/[Ss5]/g, '5')
+                .replace(/[Zz2]/g, '2')
+                .replace(/[B8]/g, '8')
+                .replace(/[𝐱𝑥𝒙𝔁𝖝𝘅𝘹𝙭]/g, 'x')
+                .replace(/[𝐞𝑒𝒆𝖾𝘦𝙚]/g, 'e')
+                .replace(/[𝐩𝑝𝒑𝖕𝘱𝙥]/g, 'p')
+                .replace(/[𝐢𝑖𝒊𝖎𝘪𝙞]/g, 'i')
+                .replace(/\*\*/g, '^')
+                .replace(/[↑⇑∧]/g, '^')
+                .replace(/\s*\^\s*/g, '^')
+                .replace(/\bsen\b/gi, 'sin')
+                .replace(/\bpi\b/gi, 'pi')
+                .replace(/\be\b/gi, 'e')
+                .replace(/\s*\+\s*/g, '+')
+                .replace(/\s*\-\s*/g, '-')
+                .replace(/\s*\*\s*/g, '*')
+                .replace(/\s*\/\s*/g, '/')
+                .replace(/\s*\(\s*/g, '(')
+                .replace(/\s*\)\s*/g, ')')
+                .replace(/\s*=\s*/g, '=');
+
+            // Si no hay operadores de potencia, intentar inferir multiplicaciones y potencias
+            if (!cleaned.includes('^')) {
+                cleaned = cleaned
+                    .replace(/(\d+)x(\d+)/g, '$1*x$2')
+                    .replace(/(\d)([a-zA-Z])/g, '$1*$2')
+                    .replace(/([a-zA-Z])(\d)/g, '$1^$2')
+                    .replace(/([a-zA-Z])([a-zA-Z])/g, '$1*$2');
+            }
+            
+            console.log("Texto limpiado:", cleaned);
+            return cleaned;
+        }
+
+        // ==================== MÉTODOS NUMÉRICOS  ====================
+        // ==================== MÉTODO DE MÜLLER ====================
+        // Maneja el envío del formulario para el método de Müller
+        function handleMullerSubmit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const functionStr = formData.get('function');
+
+            // Validar función
+            const validation = validateFunction(functionStr);
+            if (!validation.valid) {
+                document.getElementById('results').innerHTML = `<div class="error">${validation.message}</div>`;
+                return;
+            }
+
+            // Obtener valores numéricos del formulario
+            const x0 = parseFloat(formData.get('x0'));
+            const x1 = parseFloat(formData.get('x1'));
+            const x2 = parseFloat(formData.get('x2'));
+            const tolerance = parseFloat(formData.get('tolerance'));
+            const maxIterations = parseInt(formData.get('maxIterations'));
+            const decimals = parseInt(formData.get('decimals'));
+
+            // Ejecutar método
+            const results = mullerMethod(functionStr, x0, x1, x2, tolerance, maxIterations, decimals);
+
+            // Mostrar resultados
+            displayResults(results, decimals, 'muller');
+        }
+    
+    // Implementación del método de Müller
+    function mullerMethod(functionStr, x0, x1, x2, tolerance, maxIterations, decimals) {
+        const results = {
+            iterations: [],
+            root: null,
+            converged: false,
+            error: null,
+            finalIteration: null,
+            finalError: null
+        };
+
+        try {
+            // Validar inputs numéricos
+            const inputValidation = validateNumericInputs({ x0, x1, x2, tolerance, maxIterations, decimals });
+            if (!inputValidation.valid) {
+                results.error = inputValidation.message;
+                return results;
+            }
+            // Validar que los puntos iniciales sean diferentes
+            const pointsValidation = validateDifferentPoints([x0, x1, x2]);
+            if (!pointsValidation.valid) {
+                results.error = pointsValidation.message;
+                return results;
+            }
+
+            // Verificar si algún punto inicial ya es la raíz
+            const f0 = evaluateFunction(functionStr, x0);
+            const f1 = evaluateFunction(functionStr, x1);
+            const f2 = evaluateFunction(functionStr, x2);
+            
+            if (Math.abs(f0) < tolerance) {
+                results.converged = true;
+                results.root = x0;
+                results.functionValue = f0;
+                results.finalIteration = 0;
+                results.finalError = 0;
+                results.message = `¡El punto inicial x0 = ${x0} ya es la raíz!`;
+                return results;
+            }
+            if (Math.abs(f1) < tolerance) {
+                results.converged = true;
+                results.root = x1;
+                results.functionValue = f1;
+                results.finalIteration = 0;
+                results.finalError = 0;
+                results.message = `¡El punto inicial x1 = ${x1} ya es la raíz!`;
+                return results;
+            }
+            if (Math.abs(f2) < tolerance) {
+                results.converged = true;
+                results.root = x2;
+                results.functionValue = f2;
+                results.finalIteration = 0;
+                results.finalError = 0;
+                results.message = `¡El punto inicial x2 = ${x2} ya es la raíz!`;
+                return results;
+            }
+
+            let currentX0 = x0;
+            let currentX1 = x1;
+            let currentX2 = x2;
+            let ea = 100;
+            let x3 = null;
+
+            for (let i = 0; i < maxIterations; i++) {
+                // Evaluar función en puntos actuales
+                const f0 = evaluateFunction(functionStr, currentX0);
+                const f1 = evaluateFunction(functionStr, currentX1);
+                const f2 = evaluateFunction(functionStr, currentX2);
+
+                // Calcular diferencias divididas
+                const h0 = currentX1 - currentX0;
+                const h1 = currentX2 - currentX1;
+                
+                // Verificar que los puntos no estén demasiado cerca
+                if (Math.abs(h0) < 1e-15 || Math.abs(h1) < 1e-15) {
+                    results.error = "Los puntos están demasiado cerca. Use puntos más separados.";
+                    return results;
+                }
+
+                // Cálculo de parámetros para la parábola   
+                const delta0 = (f1 - f0) / h0;
+                const delta1 = (f2 - f1) / h1;
+                const a = (delta1 - delta0) / (h1 + h0);
+                const b = delta1 + (h1 * a);
+                const c = f2;
+
+                // Discriminante
+                const discriminant = b * b - 4 * a * c;
+                
+                if (discriminant < 0) {
+                    results.error = "Discriminante negativo - no se puede calcular raíz real";
+                    return results;
+                }
+                
+                const disc = Math.sqrt(discriminant);
+
+                //  Elegir el signo que maximice el denominador
+                let denominator1 = b + disc;
+                let denominator2 = b - disc;
+                
+                let denominator;
+                if (Math.abs(denominator1) > Math.abs(denominator2)) {
+                    denominator = denominator1;
+                } else {
+                    denominator = denominator2;
+                }
+
+                if (Math.abs(denominator) < 1e-15) {
+                    results.error = "Denominador cero - no se puede continuar";
+                    return results;
+                }
+
+                // Fórmula  de Müller
+                x3 = currentX2 - (2 * c) / denominator;
+                
+                // Verificar si x3 es un número válido
+                if (isNaN(x3) || !isFinite(x3)) {
+                    results.error = `Problema numérico: x3 no es un número válido en iteración ${i + 1}`;
+                    return results;
+                }
+                
+                const f3 = evaluateFunction(functionStr, x3);
+
+                // Cálculo correcto del error porcentual
+                if (i > 0) {
+                    ea = Math.abs((x3 - currentX2) / x3) * 100;
+                }
+
+                // Guardar iteración
+                const iterationData = {
+                    iter: i,
+                    x0: parseFloat(currentX0.toFixed(decimals)),
+                    x1: parseFloat(currentX1.toFixed(decimals)),
+                    x2: parseFloat(currentX2.toFixed(decimals)),
+                    f0: parseFloat(f0.toFixed(decimals)),
+                    f1: parseFloat(f1.toFixed(decimals)),
+                    f2: parseFloat(f2.toFixed(decimals)),
+                    h0: parseFloat(h0.toFixed(decimals)),
+                    h1: parseFloat(h1.toFixed(decimals)),
+                    delta0: parseFloat(delta0.toFixed(decimals)),
+                    delta1: parseFloat(delta1.toFixed(decimals)),
+                    a: parseFloat(a.toFixed(decimals)),
+                    b: parseFloat(b.toFixed(decimals)),
+                    c: parseFloat(c.toFixed(decimals)),
+                    ea: i === 0 ? null : parseFloat(ea.toFixed(decimals)),
+                    x3: parseFloat(x3.toFixed(decimals)),
+                    f3: parseFloat(f3.toFixed(decimals))
+                };
+
+                results.iterations.push(iterationData);
+
+                // Verificar convergencia
+                if (Math.abs(f3) < tolerance) {
+                    results.converged = true;
+                    results.root = x3;
+                    results.functionValue = f3;
+                    results.finalIteration = i;
+                    results.finalError = ea;
+                    break;
+                }
+                
+                if (i > 0 && ea < tolerance) {
+                    results.converged = true;
+                    results.root = x3;
+                    results.functionValue = f3;
+                    results.finalIteration = i;
+                    results.finalError = ea;
+                    break;
+                }
+
+
+                // Actualizar puntos para la siguiente iteración
+                currentX0 = currentX1;
+                currentX1 = currentX2;
+                currentX2 = x3;
+            }
+
+            // Si no convergió pero se alcanzó el máximo de iteraciones
+            if (!results.converged && results.iterations.length > 0) {
+                const last = results.iterations[results.iterations.length - 1];
+                results.root = last.x3;
+                results.functionValue = evaluateFunction(functionStr, results.root);
+                results.finalIteration = results.iterations.length - 1;
+                results.finalError = last.ea;
+            }
+
+        } catch (error) {
+            results.error = error.message;
+        }
+
+        return results;
+    }
+
+        // ==================== MÉTODO DE LA SECANTE ====================
+        function handleSecantSubmit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const functionStr = formData.get('function');
+
+            // Validar función
+            const validation = validateFunction(functionStr);
+            if (!validation.valid) {
+                document.getElementById('results').innerHTML = `<div class="error">${validation.message}</div>`;
+                return;
+            }
+            
+
+            // Obtener valores numéricos
+            const x0 = parseFloat(formData.get('x0'));
+            const x1 = parseFloat(formData.get('x1'));
+            const tolerance = parseFloat(formData.get('tolerance'));
+            const maxIterations = parseInt(formData.get('maxIterations'));
+            const decimals = parseInt(formData.get('decimals'));
+
+            // Ejecutar método
+            const results = secantMethod(functionStr, x0, x1, tolerance, maxIterations, decimals);
+
+            // Mostrar resultados
+            displayResults(results, decimals, 'secant');
+        }
+
+        function secantMethod(functionStr, x0, x1, tolerance, maxIterations, decimals) {
+            const results = {
+                iterations: [],
+                root: null,
+                converged: false,
+                error: null,
+                finalError: null,
+                finalIteration: null
+            };
+
+            // Validar inputs numéricos
+            const inputValidation = validateNumericInputs({ x0, x1, tolerance, maxIterations, decimals });
+            if (!inputValidation.valid) {
+                results.error = inputValidation.message;
+                return results;
+            }
+
+            // Validar que puntos iniciales sean diferentes
+            const pointsValidation = validateDifferentPoints([x0, x1]);
+            if (!pointsValidation.valid) {
+                results.error = pointsValidation.message;
+                return results;
+            }
+
+            try {
+                                // Verificar si algún punto inicial ya es la raíz
+                const f0 = evaluateFunction(functionStr, x0);
+                const f1 = evaluateFunction(functionStr, x1);
+                
+                if (Math.abs(f0) < tolerance) {
+                    results.converged = true;
+                    results.root = x0;
+                    results.functionValue = f0;
+                    results.finalIteration = 0;
+                    results.finalError = 0;
+                    results.message = `¡El punto inicial x0 = ${x0} ya es la raíz!`;
+                    return results;
+                }
+                if (Math.abs(f1) < tolerance) {
+                    results.converged = true;
+                    results.root = x1;
+                    results.functionValue = f1;
+                    results.finalIteration = 0;
+                    results.finalError = 0;
+                    results.message = `¡El punto inicial x1 = ${x1} ya es la raíz!`;
+                    return results;
+                }
+
+                let currentX0 = x0;
+                let currentX1 = x1;
+                let ea = 100; // error inicial grande
+
+                for (let i = 0; i < maxIterations; i++) {
+                    // Evaluar función en puntos actuales
+                    const f0 = evaluateFunction(functionStr, currentX0);
+                    const f1 = evaluateFunction(functionStr, currentX1);
+
+                    // Evitar división por cero
+                    const denominator = f1 - f0;
+                    if (Math.abs(denominator) < 1e-15) {
+                        if (Math.abs(f1) < tolerance) {
+                            // ¡Encontramos la raíz!
+                            results.converged = true;
+                            results.root = currentX1;
+                            results.functionValue = f1;
+                            results.message = `Raíz encontrada (denominador cero pero f(x) ≈ 0)`;
+                            break;
+                        } else {
+                            results.error = `Puntos estancados en iteración ${i + 1}. Intente con otros puntos iniciales.`;
+                            return results;
+                        }
+                    }
+
+                    // Fórmula de la secante
+                    const x2 = currentX1 - (f1 * (currentX1 - currentX0)) / denominator;
+                    const f2 = evaluateFunction(functionStr, x2);
+
+                    // Calcular error porcentual (como en MATLAB)
+                    if (i > 0) {
+                        ea = Math.abs((x2 - currentX1) / x2) * 100;
+                    }
+
+                    // Guardar iteración (con nomenclatura consistente)
+                    const iterationData = {
+                        iter: i + 1,
+                        x0: parseFloat(currentX0.toFixed(decimals)),
+                        x1: parseFloat(currentX1.toFixed(decimals)),
+                        x2: parseFloat(x2.toFixed(decimals)),
+                        f0: parseFloat(f0.toFixed(decimals)),
+                        f1: parseFloat(f1.toFixed(decimals)),
+                        f2: parseFloat(f2.toFixed(decimals)),
+                        ea: i === 0 ? null : parseFloat(ea.toFixed(decimals))
+                    };
+
+                    results.iterations.push(iterationData);
+
+                    // Verificar convergencia DESPUÉS de guardar la iteración (solo con error porcentual)
+                    if (i > 0 && ea <= tolerance) {
+                        results.converged = true;
+                        results.root = x2;
+                        results.functionValue = f2;
+                        results.finalError = ea;
+                        results.finalIteration = i + 1;
+                        break;
+                    }
+
+                    // Actualizar valores para siguiente iteración
+                    currentX0 = currentX1;
+                    currentX1 = x2;
+                }
+
+                // Si no convergió, usar última aproximación
+                if (!results.converged && results.iterations.length > 0) {
+                    const lastIteration = results.iterations[results.iterations.length - 1];
+                    results.root = lastIteration.x2;
+                    results.functionValue = evaluateFunction(functionStr, results.root);
+                    results.finalError = lastIteration.ea;
+                    results.finalIteration = results.iterations.length;
+                }
+
+            } catch (error) {
+                results.error = error.message;
+            }
+
+            return results;
+                }
+        // ==================== MÉTODO DE BISECCIÓN ====================
+        function handleBisectionSubmit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const functionStr = formData.get('function');
+
+            // Validar función
+            const validation = validateFunction(functionStr);
+            if (!validation.valid) {
+                document.getElementById('results').innerHTML = `<div class="error">${validation.message}</div>`;
+                return;
+            }
+
+            // Obtener valores numéricos
+            const a = parseFloat(formData.get('a'));
+            const b = parseFloat(formData.get('b'));
+            const tolerance = parseFloat(formData.get('tolerance'));
+            const maxIterations = parseInt(formData.get('maxIterations'));
+            const decimals = parseInt(formData.get('decimals'));
+
+            // Ejecutar método
+            const results = bisectionMethod(functionStr, a, b, tolerance, maxIterations, decimals);
+
+            // Mostrar resultados
+            displayResults(results, decimals, 'bisection');
+        }
+
+        function bisectionMethod(functionStr, a, b, tolerance, maxIterations, decimals) {
+            const results = {
+                iterations: [],
+                root: null,
+                converged: false,
+                error: null,
+                finalError: null,
+                finalIteration: null
+            };
+
+            // Validar inputs numéricos
+            const inputValidation = validateNumericInputs({ a, b, tolerance, maxIterations, decimals });
+            if (!inputValidation.valid) {
+                results.error = inputValidation.message;
+                return results;
+            }
+            // Validar que a y b sean diferentes
+            const pointsValidation = validateDifferentPoints([a, b]);
+            if (!pointsValidation.valid) {
+                results.error = pointsValidation.message;
+                return results;
+            }
+
+            try {
+                let currentA = a;
+                let currentB = b;
+                let previousC = 0; // ca del código MATLAB
+                let ea = 100; // error inicial grande
+
+                // Evaluar función en los extremos
+                const fa = evaluateFunction(functionStr, currentA);
+                const fb = evaluateFunction(functionStr, currentB);
+                // Verificar si algún extremo ya es la raíz
+                if (Math.abs(fa) < tolerance) {
+                    results.converged = true;
+                    results.root = currentA;
+                    results.functionValue = fa;
+                    results.finalIteration = 0;
+                    results.finalError = 0;
+                    results.message = `¡El extremo a = ${currentA} ya es la raíz!`;
+                    return results;
+                }
+                if (Math.abs(fb) < tolerance) {
+                    results.converged = true;
+                    results.root = currentB;
+                    results.functionValue = fb;
+                    results.finalIteration = 0;
+                    results.finalError = 0;
+                    results.message = `¡El extremo b = ${currentB} ya es la raíz!`;
+                    return results;
+                }
+                // Verificar cambio de signo (condición necesaria)
+                if (fa * fb >= 0) {
+                    results.error = "No existe una raíz en el intervalo dado (f(a)*f(b) ≥ 0)";
+                    return results;
+                }
+
+                for (let i = 0; i < maxIterations; i++) {
+                    // Calcular punto medio
+                    const c = (currentA + currentB) / 2;
+                    const fc = evaluateFunction(functionStr, c);
+
+                    // Calcular error porcentual (como en MATLAB)
+                    if (i > 0) {
+                        ea = Math.abs((c - previousC) / c) * 100;
+                    }
+
+                    // Guardar iteración
+                    const iterationData = {
+                        iter: i + 1,
+                        a: parseFloat(currentA.toFixed(decimals)),
+                        b: parseFloat(currentB.toFixed(decimals)),
+                        c: parseFloat(c.toFixed(decimals)),
+                        fa: parseFloat(fa.toFixed(decimals)),
+                        fb: parseFloat(fb.toFixed(decimals)),
+                        fc: parseFloat(fc.toFixed(decimals)),
+                        ea: i === 0 ? null : parseFloat(ea.toFixed(decimals))
+                    };
+
+                    results.iterations.push(iterationData);
+
+                    // Verificar convergencia por error porcentual
+                    if (i > 0 && ea <= tolerance) {
+                        results.converged = true;
+                        results.root = c;
+                        results.functionValue = fc;
+                        results.finalError = ea;
+                        results.finalIteration = i + 1;
+                        break;
+                    }
+
+                    // Actualizar intervalo según el cambio de signo
+                    if (fa * fc < 0) {
+                        currentB = c;
+                        // fb se mantiene igual (no se recalcula en MATLAB)
+                    } else {
+                        currentA = c;
+                        // fa se mantiene igual (no se recalcula en MATLAB)
+                    }
+
+                    // Guardar c actual para cálculo del error en siguiente iteración
+                    previousC = c;
+                }
+
+                // Si no convergió, usar última aproximación
+                if (!results.converged && results.iterations.length > 0) {
+                    const lastIteration = results.iterations[results.iterations.length - 1];
+                    results.root = lastIteration.c;
+                    results.functionValue = evaluateFunction(functionStr, results.root);
+                    results.finalError = lastIteration.ea;
+                    results.finalIteration = results.iterations.length;
+                }
+
+            } catch (error) {
+                results.error = error.message;
+            }
+
+            return results;
+        }
+        // ==================== MÉTODO DE NEWTON-RAPHSON ====================
+        function handleNewtonSubmit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const functionStr = formData.get('function');
+
+            // Validar función
+            const validation = validateFunction(functionStr);
+            if (!validation.valid) {
+                document.getElementById('results').innerHTML = `<div class="error">${validation.message}</div>`;
+                return;
+            }
+
+            // Obtener valores numéricos
+            const x0 = parseFloat(formData.get('x0'));
+            const tolerance = parseFloat(formData.get('tolerance'));
+            const maxIterations = parseInt(formData.get('maxIterations'));
+            const decimals = parseInt(formData.get('decimals'));
+
+            // Ejecutar método
+            const results = newtonMethod(functionStr, x0, tolerance, maxIterations, decimals);
+
+            // Mostrar resultados
+            displayResults(results, decimals, 'newton');
+        }
+
+        function newtonMethod(functionStr, x0, tolerance, maxIterations, decimals) {
+            const results = {
+                iterations: [],
+                root: null,
+                converged: false,
+                error: null,
+                finalError: null,
+                finalIteration: null
+            };
+
+            // Validar inputs numéricos
+            const inputValidation = validateNumericInputs({ x0, tolerance, maxIterations, decimals });
+            if (!inputValidation.valid) {
+                results.error = inputValidation.message;
+                return results;
+            }
+
+            try {
+                        // Verificar si el punto inicial ya es la raíz
+                const fx0 = evaluateFunction(functionStr, x0);
+                if (Math.abs(fx0) < tolerance) {
+                    results.converged = true;
+                    results.root = x0;
+                    results.functionValue = fx0;
+                    results.finalIteration = 0;
+                    results.finalError = 0;
+                    results.message = `¡El punto inicial x0 = ${x0} ya es la raíz!`;
+                    return results;
+                }
+                let currentX = x0;
+                let ea = 100; // error inicial grande
+
+                // Crear función derivada
+                const fDash = createDerivative(functionStr);
+
+                for (let i = 0; i < maxIterations; i++) {
+                    // Evaluar función y derivada en el punto actual
+                    const fx = evaluateFunction(functionStr, currentX);
+                    const fDashX = fDash(currentX);
+
+                    // Verificar que la derivada no sea cero
+                    if (Math.abs(fDashX) < 1e-15) {
+                        results.error = `Derivada cero en iteración ${i + 1} - no se puede continuar`;
+                        return results;
+                    }
+
+                    // Calcular nueva aproximación
+                    const xNext = currentX - fx / fDashX;
+                    const fxNext = evaluateFunction(functionStr, xNext);
+
+                    // Calcular error porcentual (como en los otros métodos)
+                    if (i > 0) {
+                        ea = Math.abs((xNext - currentX) / xNext) * 100;
+                    }
+
+                    // Guardar iteración
+                    const iterationData = {
+                        iter: i + 1,
+                        x0: parseFloat(currentX.toFixed(decimals)),
+                        fx: parseFloat(fx.toFixed(decimals)),
+                        fDashX: parseFloat(fDashX.toFixed(decimals)),
+                        xNext: parseFloat(xNext.toFixed(decimals)),
+                        fxNext: parseFloat(fxNext.toFixed(decimals)),
+                        ea: i === 0 ? null : parseFloat(ea.toFixed(decimals))
+                    };
+
+                    results.iterations.push(iterationData);
+
+                    // Verificar convergencia por error porcentual
+                    if (i > 0 && ea <= tolerance) {
+                        results.converged = true;
+                        results.root = xNext;
+                        results.functionValue = fxNext;
+                        results.finalError = ea;
+                        results.finalIteration = i + 1;
+                        break;
+                    }
+
+                    // Actualizar para siguiente iteración
+                    currentX = xNext;
+                }
+
+                // Si no convergió, usar última aproximación
+                if (!results.converged && results.iterations.length > 0) {
+                    const lastIteration = results.iterations[results.iterations.length - 1];
+                    results.root = lastIteration.xNext;
+                    results.functionValue = evaluateFunction(functionStr, results.root);
+                    results.finalError = lastIteration.ea;
+                    results.finalIteration = results.iterations.length;
+                }
+
+            } catch (error) {
+                results.error = error.message;
+            }
+
+            return results;
+        }
+
+        // Función para crear la derivada usando math.js
+        function createDerivative(functionStr) {
+            return (x) => {
+                try {
+                    // Usar mathjs para calcular la derivada simbólica
+                    const derivative = math.derivative(functionStr, 'x').toString();
+                    return math.evaluate(derivative, {x: x});
+                } catch (error) {
+                    console.error("Error computing derivative:", error);
+                    throw new Error("No se pudo calcular la derivada de la función");
+                }
+            };
+        }
+
+// ==================== VISUALIZACIÓN DE RESULTADOS ====================
+function displayResults(results, decimals, method) {
+    const resultsDiv = document.getElementById('results');
+    
+    if (results.error) {
+        resultsDiv.innerHTML = `<div class="error">Error: ${results.error}</div>`;
+        return;
+    }
+
+    let html = '';
+
+    // Mostrar mensaje especial si se encontró la raíz inmediatamente
+    if (results.message) {
+        html += `<div class="success-message">${results.message}</div>`;
+    }
+
+    // Generar tabla de iteraciones  según el método
+    if (results.iterations.length > 0) {
+        let headers, iterationData;
+
+         // Configurar columnas según el método
+        switch(method) {
+            case 'muller':
+                headers = [
+                    'Iter', 'x₀', 'x₁', 'x₂', 'x₃',
+                    'f(x₀)', 'f(x₁)', 'f(x₂)', 'f(x₃)',
+                    'h₀', 'h₁', 'δ₀', 'δ₁', 'a', 'b', 'c',
+                    'ea (%)'
+                ];
+                // Mapear datos de iteración
+                iterationData = results.iterations.map(iter => ({
+                    'Iter': iter.iter,
+                    'x₀': iter.x0,
+                    'x₁': iter.x1,
+                    'x₂': iter.x2, 
+                    'x₃': iter.x3,
+                    'f(x₀)': iter.f0, 
+                    'f(x₁)': iter.f1, 
+                    'f(x₂)': iter.f2, 
+                    'f(x₃)': iter.f3,
+                    'h₀': iter.h0, 
+                    'h₁': iter.h1,
+                    'δ₀': iter.delta0, 
+                    'δ₁': iter.delta1,
+                    'a': iter.a, 
+                    'b': iter.b, 
+                    'c': iter.c,
+                    'ea (%)': iter.ea !== null ? iter.ea : '---'
+                }));
+                break;
+                
+            case 'secant':
+                 headers = ['Iter', 'x₀', 'x₁', 'x₂', 'f(x₀)', 'f(x₁)', 'f(x₂)', 'ea (%)'];
+                iterationData = results.iterations.map(iter => ({
+                    'Iter': iter.iter,
+                    'x₀': iter.x0, 
+                    'x₁': iter.x1, 
+                    'x₂': iter.x2,
+                    'f(x₀)': iter.f0, 
+                    'f(x₁)': iter.f1, 
+                    'f(x₂)': iter.f2,
+                    'ea (%)': iter.ea !== null ? iter.ea : '---'
+                }));
+                break;
+                
+            case 'bisection':
+                headers = ['Iter', 'a', 'b', 'c', 'f(a)', 'f(b)', 'f(c)', 'ea %'];
+                iterationData = results.iterations.map(iter => [
+                    iter.iter,
+                    iter.a,
+                    iter.b,
+                    iter.c,
+                    iter.fa,
+                    iter.fb,
+                    iter.fc,
+                    iter.ea !== null ? iter.ea : '---'
+                ]);
+                break;
+                
+            case 'newton':
+                headers = ['Iter', 'x₀', 'f(x₀)', 'f\'(x₀)', 'x₁', 'f(x₁)', 'ea (%)'];
+                iterationData = results.iterations.map(iter => [
+                    iter.iter,
+                    iter.x0,
+                    iter.fx,
+                    iter.fDashX,
+                    iter.xNext,
+                    iter.fxNext,
+                    iter.ea !== null ? iter.ea : '---'
+                ]);
+                break;
+        }
+        
+        html += generateIterationTable(iterationData, headers, decimals);
+    }
+
+     // Información adicional para Newton-Raphson (derivada)
+    if (method === 'newton') {
+        // Usar el input de función principal
+        const functionStr = getFunctionString(method);
+        
+        if (functionStr) {
+            const derivativeStr = getDerivativeString(functionStr);
+            html = `
+                <div class="derivative-info" style="background: #e6f3ff; border: 1px solid #b3d9ff; border-radius: 5px; padding: 10px; margin-bottom: 15px;">
+                    <strong>Información de la derivada:</strong><br>
+                    Función: f(x) = ${functionStr}<br>
+                    Derivada: f'(x) = ${derivativeStr}
+                </div>
+            ` + html;
+        }
+    }
+
+    html += generateResultsSummary(results, decimals);
+    resultsDiv.innerHTML = html;
+
+    // Graficar función con resultados
+    const functionStr = getFunctionString(method);
+    
+    if (functionStr) {
+        let initialPoints = getInitialPoints(method);
+        plotFunction(functionStr, results.root, initialPoints, 'functionChart');
+    }
+}
+// ==================== FUNCIÓN AUXILIAR ====================
+function getFunctionString(method) {
+    // Obtiene la función del input principal
+    const functionInput = document.getElementById('functionInput');
+    
+    if (!functionInput) {
+        console.error('No se pudo encontrar el input de función');
+        return null;
+    }
+    
+    return functionInput.value;
+}       
+    </script>
+</body>
+</html>

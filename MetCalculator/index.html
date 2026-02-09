@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Métodos Numéricos - Inicio</title>
+    <link rel="stylesheet" type="text/css" href="estilo.css">
+    <style>
+        /* Estilos adicionales específicos para la página principal */
+        .seccion-teoria {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .card-teoria {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #ce7899;
+        }
+
+        .card-teoria h2 {
+            color: #6a3439;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .card-teoria h3 {
+            color:  #8f4869;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-size: 1.4rem;
+        }
+
+        .card-teoria p {
+            line-height: 1.8;
+            color: #374151;
+            text-align: justify;
+            margin-bottom: 1rem;
+        }
+
+        .card-teoria ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-teoria li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+            color: #4b5563;
+        }
+
+        .card-ejemplo {
+            background: linear-gradient(135deg, #dba4af 0%, #d487b0 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin: 3rem auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-ejemplo h2 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .ejemplo-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-top: 1rem;
+        }
+
+        .ejemplo-parametros {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .parametro-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .parametro-item strong {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .parametro-item span {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .ecuacion {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .highlight {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .concepto-box {
+            background: #fef0ff;
+            border-left: 4px solid #faafec;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .concepto-box strong {
+            color: #a04576;
+        }
+
+        .metodo-destacado {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .metodo-imagen {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .metodo-destacado {
+                grid-template-columns: 1fr;
+            }
+
+            .ejemplo-parametros {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn-resolver {
+            background: white;
+            color: #b2626a;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: block;
+            margin: 2rem auto 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-resolver:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .circuito-diagram {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .circuito-diagram img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body class="pag-general">
+<header class="head">
+  <div class="cont1">
+     <div class="cont2">
+        <div class="logo">
+            <h1>Calculadora de Métodos Numéricos</h1> 
+        </div>
+    </div>
+    <div class="head_container">
+        <div class="head_container_content">
+            <a href="index.html" class="header">Página Principal</a>
+            <a href="metodos.html" class="header">Métodos Numéricos</a>
+            <a href="calculadora.html" class="header">Calculadora Básica</a>
+            <a href="graficar.html" class="header">Graficar</a>
+        </div>
+    </div>
+  </div>
+</header>
+
+<section class="banner">
+   <div class="contenido-banner">
+      <p>Matemáticas Aplicadas a la Ingeniería</p>
+      <h2>Métodos Numéricos Interactivos</h2>
+      <h4>Herramientas precisas para resolver problemas complejos</h4>
+   </div> 
+</section>
+
+<br><br>
+
+<!-- SECCIÓN 1: CONCEPTUALIZACIÓN DE MÉTODOS NUMÉRICOS -->
+<section class="seccion-teoria">
+    <div class="card-teoria">
+        <h2>¿Qué son los Métodos Numéricos?</h2>
+        <p>
+            Los <strong>métodos numéricos</strong> son técnicas matemáticas que permiten obtener 
+            soluciones aproximadas a problemas que no pueden resolverse mediante métodos analíticos 
+            exactos. Constituyen la base de los cálculos computacionales modernos y son fundamentales 
+            en ingeniería, física, ciencias de la computación y análisis de datos.
+        </p>
+
+        <h3>Características Principales</h3>
+        <ul>
+            <li><strong>Soluciones Aproximadas:</strong> Proporcionan resultados con un error 
+                controlado y cuantificable, no soluciones exactas.</li>
+            <li><strong>Naturaleza Iterativa:</strong> Utilizan procesos repetitivos que mejoran 
+                sucesivamente la aproximación hasta alcanzar la precisión deseada.</li>
+            <li><strong>Criterios de Convergencia:</strong> Requieren establecer condiciones de 
+                parada basadas en tolerancias de error aceptables.</li>
+            <li><strong>Implementación Computacional:</strong> Están diseñados específicamente 
+                para ser ejecutados por computadoras.</li>
+            <li><strong>Versatilidad:</strong> Se aplican a diversos problemas: solución de 
+                ecuaciones, sistemas lineales, optimización, integración, diferenciación, etc.</li>
+        </ul>
+
+        <h3>Importancia en Ingeniería</h3>
+        <p>
+            En el contexto ingenieril, los métodos numéricos son indispensables porque:
+        </p>
+        <ul>
+            <li>Muchos problemas reales carecen de solución analítica cerrada</li>
+            <li>Permiten diseñar y optimizar sistemas complejos antes de construirlos</li>
+            <li>Facilitan el análisis de sensibilidad y estudios paramétricos</li>
+            <li>Reducen costos al minimizar la necesidad de prototipos físicos</li>
+            <li>Permiten simulaciones que serían imposibles o peligrosas en la realidad</li>
+        </ul>
+
+        <div class="concepto-box">
+            <strong>Diferencia clave:</strong> Mientras que un método analítico proporciona 
+            una fórmula exacta (ej: x = √2 = 1.41421356...), un método numérico proporciona 
+            una aproximación con precisión controlada (ej: x ≈ 1.4142 con error < 0.0001).
+        </div>
+
+        <h3>Tipos de Errores en Métodos Numéricos</h3>
+        <ul>
+            <li><strong>Error de Redondeo:</strong> Causado por la representación finita de 
+                números en computadoras (punto flotante).</li>
+            <li><strong>Error de Truncamiento:</strong> Resultado de aproximar procesos infinitos 
+                mediante un número finito de operaciones.</li>
+            <li><strong>Error de Propagación:</strong> Acumulación de errores previos a través 
+                de cálculos sucesivos.</li>
+            <li><strong>Error Inherente:</strong> Presente en los datos de entrada debido a 
+                mediciones imprecisas.</li>
+        </ul>
+    </div>
+
+    <!-- Método Newton-Raphson Destacado -->
+    <div class="recetasemana">
+        <h2>Método Destacado: Newton-Raphson</h2>
+        <div class="metodo-destacado">
+            <div>
+                <img src="rec/newton1.jpg" alt="Newton-Raphson" class="metodo-imagen">
+            </div>
+            <div>
+                <p>
+                    El <strong>método de Newton-Raphson</strong> es uno de los algoritmos más 
+                    potentes y ampliamente utilizados para encontrar raíces de ecuaciones no lineales. 
+                    Utiliza la derivada de la función para aproximar la raíz mediante aproximaciones 
+                    lineales sucesivas.
+                </p>
+                <p>
+                    <strong>Fórmula iterativa:</strong>
+                </p>
+                <div class="ecuacion">
+                    x<sub>n+1</sub> = x<sub>n</sub> - f(x<sub>n</sub>)/f'(x<sub>n</sub>)
+                </div>
+                <p>
+                    <strong>Ventajas:</strong> Convergencia cuadrática (muy rápida) cuando la 
+                    estimación inicial es cercana a la raíz.
+                    <br>
+                    <strong>Desventajas:</strong> Requiere calcular la derivada y es sensible 
+                    a la estimación inicial.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECCIÓN 2: EJEMPLO APLICATIVO DEL CIRCUITO RLC -->
+<section class="seccion-teoria">
+    <div class="card-ejemplo">
+        <h2>🔌 Ejemplo Aplicativo: Diseño de Circuito Eléctrico RLC</h2>
+        
+        <div class="ejemplo-content">
+            <h3 style="color: white; text-align: center; margin-bottom: 1rem;">
+                Problema de Ingeniería Eléctrica
+            </h3>
+            <p style="font-size: 1.1rem;">
+                Un problema típico en el diseño de circuitos eléctricos consiste en determinar 
+                el valor apropiado de <span class="highlight">resistencia (R)</span> para disipar 
+                energía a una tasa específica en un circuito RLC (Resistor-Inductor-Capacitor) 
+                transitorio.
+            </p>
+
+            <h3 style="color: white; margin-top: 2rem; margin-bottom: 1rem;">
+                Especificaciones del Circuito
+            </h3>
+            <div class="ejemplo-parametros">
+                <div class="parametro-item">
+                    <strong>Inductancia (L)</strong>
+                    <span>5 H</span>
+                </div>
+                <div class="parametro-item">
+                    <strong>Capacitancia (C)</strong>
+                    <span>10<sup>-4</sup> F</span>
+                </div>
+                <div class="parametro-item">
+                    <strong>Voltaje Inicial (V₀)</strong>
+                    <span>10 V</span>
+                </div>
+                <div class="parametro-item">
+                    <strong>Tiempo Objetivo (t)</strong>
+                    <span>0.05 s</span>
+                </div>
+            </div>
+
+            <h3 style="color: white; margin-top: 2rem; margin-bottom: 1rem;">
+                Requisito de Diseño
+            </h3>
+            <p style="font-size: 1.1rem; text-align: center;">
+                La carga en el capacitor debe <span class="highlight">disiparse al 1% de su 
+                valor inicial</span> (q/q₀ = 0.01) en exactamente t = 0.05 segundos.
+            </p>
+
+            <h3 style="color: white; margin-top: 2rem; margin-bottom: 1rem;">
+                Ecuación a Resolver
+            </h3>
+            <p>
+                Aplicando las leyes de Kirchhoff y resolviendo la ecuación diferencial del 
+                circuito, se obtiene:
+            </p>
+            <div class="ecuacion">
+                q(t) = q₀ · e<sup>-Rt/2L</sup> · cos[√(1/LC - R²/4L²) · t]
+            </div>
+            <p style="text-align: center; margin-top: 1rem;">
+                Sustituyendo los valores conocidos y estableciendo q/q₀ = 0.01:
+            </p>
+            <div class="ecuacion">
+                f(R) = e<sup>-0.005R</sup> · cos[0.05√(2000 - 0.01R²)] - 0.01 = 0
+            </div>
+
+            <h3 style="color: white; margin-top: 2rem; margin-bottom: 1rem;">
+                ¿Por qué Necesitamos Métodos Numéricos?
+            </h3>
+            <p style="font-size: 1.05rem;">
+                Esta ecuación es <strong>no lineal e implícita en R</strong>. No existe una 
+                fórmula algebraica que permita despejar R directamente. La única forma de 
+                encontrar la solución es mediante métodos numéricos iterativos.
+            </p>
+
+            <h3 style="color: white; margin-top: 2rem; margin-bottom: 1rem;">
+                Solución Esperada
+            </h3>
+            <p style="text-align: center; font-size: 1.2rem; margin: 1rem 0;">
+                Aplicando el <span class="highlight">método de bisección</span> en el 
+                intervalo [0, 400] Ω:
+            </p>
+            <div style="background: rgba(255, 255, 255, 0.2); padding: 1.5rem; 
+                        border-radius: 8px; text-align: center; margin: 1rem 0;">
+                <p style="font-size: 1.4rem; font-weight: 600; margin: 0;">
+                    R ≈ 328.15 Ω
+                </p>
+                <p style="font-size: 1rem; margin-top: 0.5rem;">
+                    Resistor estándar comercial más cercano: <strong>330 Ω</strong>
+                </p>
+            </div>
+
+            <button class="btn-resolver" onclick="window.location.href='metcalculadora.html'">
+                Resolver Este Problema Interactivamente →
+            </button>
+        </div>
+    </div>
+
+    <!-- Importancia del Ejemplo -->
+</section>
+
+<br><br>
+
+<!-- SECCIÓN FINAL: SOBRE NOSOTROS Y CONTACTO -->
+<div class="final">
+    <div class="sobreus">
+        <h1 align="middle">Sobre Esta Aplicación</h1>
+        <br>
+        <p>
+            Esta <strong>aplicación web interactiva</strong> fue desarrollada como proyecto 
+            educativo para facilitar el aprendizaje y aplicación de métodos numéricos en 
+            ingeniería. 
+            <br><br>
+            <strong>Características:</strong>
+            <ul>
+                <li>Implementación de 4 métodos numéricos fundamentales</li>
+                <li>Visualización gráfica del proceso iterativo</li>
+                <li>Ejemplo aplicativo completo de ingeniería eléctrica</li>
+                <li>Calculadora científica integrada</li>
+                <li>Graficador de funciones matemáticas</li>
+                <li>100% gratuita y accesible desde cualquier navegador</li>
+            </ul>
+            <br>
+            <strong>Objetivo:</strong> Demostrar la utilidad práctica de los métodos numéricos 
+            mediante herramientas interactivas que faciliten la experimentación y comprensión 
+            profunda de conceptos matemáticos aplicados a problemas reales de ingeniería.
+            <br><br>
+            <em>Referencias:</em>
+            <ul style="font-size: 0.9rem; line-height: 1.4;">
+                <li>Burden, R. L., Faires, J. D., & Burden, A. M. (2016). <i>Numerical Analysis</i> (10.ª ed.). Cengage Learning.</li>
+                <li>Chapra, S. C., & Canale, R. P. (2015). <i>Métodos Numéricos para Ingenieros</i> (7.ª ed.). McGraw-Hill.</li>
+                <li>Alexander, C. K., & Sadiku, M. N. O. (2017). <i>Fundamentals of Electric Circuits</i> (6.ª ed.). McGraw-Hill.</li>
+            </ul>
+        </p>
+    </div>
+    
+    <div class="contacto">
+        <h3 align="middle">Ejemplo Rápido: Método de la Secante</h3> 
+        <br>
+        <p>
+            <strong>Problema:</strong> Encontrar la raíz de la función:  
+            <br><code style="background: #f0f9ff; padding: 0.5rem; display: block; 
+                             margin: 0.5rem 0; border-radius: 4px;">
+                f(x) = cos(x) - x
+            </code>
+            <br>
+            <strong>Método:</strong> Secante con valores iniciales <code>x₀ = 0.5</code> 
+            y <code>x₁ = 1.0</code>
+            <br><br>
+            <strong>Fórmula iterativa:</strong>  
+            <br><code style="background: #fff0fb; padding: 0.5rem; display: block; 
+                             margin: 0.5rem 0; border-radius: 4px; font-size: 0.9rem;">
+                x₂ = x₁ - f(x₁) · (x₁ - x₀) / (f(x₁) - f(x₀))
+            </code>
+            <br>
+            <strong>Resultado:</strong> Después de 5-6 iteraciones se obtiene:
+            <br><code style="background: #fde2ed; padding: 0.5rem; display: block; 
+                             margin: 0.5rem 0; border-radius: 4px; font-weight: 600;">
+                x ≈ 0.739085
+            </code>
+            <br>
+            Esta es la solución de la ecuación trascendental <code>cos(x) = x</code>, 
+            que representa el punto donde la función coseno intersecta la línea identidad.
+            <br><br>
+            <strong>Interpretación:</strong> Este valor tiene aplicaciones en análisis de 
+            vibraciones, teoría de control y análisis de estabilidad de sistemas.
+        </p>
+        <br>
+        <button class="btn-resolver" onclick="window.location.href='metcalculadora.html'" 
+                style="background: #f6a4a4; color: white; margin-top: 1rem;">
+            Probar en la Calculadora →
+        </button>
+    </div>
+</div>
+
+<br><br>
+
+<footer>
+    <div class="foot_container">
+        <div id="derechos">
+            <p>© 2025 - MetCalculator - Calculadora de Métodos Numéricos</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
